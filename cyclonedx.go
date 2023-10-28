@@ -49,11 +49,16 @@ type Affects struct {
 }
 
 type Annotation struct {
-	BOMRef    string          `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
-	Subjects  *[]BOMReference `json:"subjects,omitempty" xml:"subjects>subject,omitempty"`
-	Annotator *Annotator      `json:"annotator,omitempty" xml:"annotator,omitempty"`
-	Timestamp string          `json:"timestamp,omitempty" xml:"timestamp,omitempty"`
-	Text      string          `json:"text,omitempty" xml:"text,omitempty"`
+	BOMRef                string          `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
+	Subjects              *[]BOMReference `json:"subjects,omitempty" xml:"subjects>subject,omitempty"`
+	Annotator             *Annotator      `json:"annotator,omitempty" xml:"annotator,omitempty"`
+	Timestamp             string          `json:"timestamp,omitempty" xml:"timestamp,omitempty"`
+	Text                  string          `json:"text,omitempty" xml:"text,omitempty"`
+	Equalable[Annotation] `json:"-" xml:"-"`
+}
+
+func (a1 Annotation) IsEqual(a2 *Annotation) bool {
+	return a1.BOMRef == a2.BOMRef
 }
 
 type Annotator struct {
@@ -142,30 +147,39 @@ type Commit struct {
 }
 
 type Component struct {
-	BOMRef             string                `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
-	MIMEType           string                `json:"mime-type,omitempty" xml:"mime-type,attr,omitempty"`
-	Type               ComponentType         `json:"type" xml:"type,attr"`
-	Supplier           *OrganizationalEntity `json:"supplier,omitempty" xml:"supplier,omitempty"`
-	Author             string                `json:"author,omitempty" xml:"author,omitempty"`
-	Publisher          string                `json:"publisher,omitempty" xml:"publisher,omitempty"`
-	Group              string                `json:"group,omitempty" xml:"group,omitempty"`
-	Name               string                `json:"name" xml:"name"`
-	Version            string                `json:"version,omitempty" xml:"version,omitempty"`
-	Description        string                `json:"description,omitempty" xml:"description,omitempty"`
-	Scope              Scope                 `json:"scope,omitempty" xml:"scope,omitempty"`
-	Hashes             *[]Hash               `json:"hashes,omitempty" xml:"hashes>hash,omitempty"`
-	Licenses           *Licenses             `json:"licenses,omitempty" xml:"licenses,omitempty"`
-	Copyright          string                `json:"copyright,omitempty" xml:"copyright,omitempty"`
-	CPE                string                `json:"cpe,omitempty" xml:"cpe,omitempty"`
-	PackageURL         string                `json:"purl,omitempty" xml:"purl,omitempty"`
-	SWID               *SWID                 `json:"swid,omitempty" xml:"swid,omitempty"`
-	Modified           *bool                 `json:"modified,omitempty" xml:"modified,omitempty"`
-	Pedigree           *Pedigree             `json:"pedigree,omitempty" xml:"pedigree,omitempty"`
-	ExternalReferences *[]ExternalReference  `json:"externalReferences,omitempty" xml:"externalReferences>reference,omitempty"`
-	Properties         *[]Property           `json:"properties,omitempty" xml:"properties>property,omitempty"`
-	Components         *[]Component          `json:"components,omitempty" xml:"components>component,omitempty"`
-	Evidence           *Evidence             `json:"evidence,omitempty" xml:"evidence,omitempty"`
-	ReleaseNotes       *ReleaseNotes         `json:"releaseNotes,omitempty" xml:"releaseNotes,omitempty"`
+	BOMRef               string                `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
+	MIMEType             string                `json:"mime-type,omitempty" xml:"mime-type,attr,omitempty"`
+	Type                 ComponentType         `json:"type" xml:"type,attr"`
+	Supplier             *OrganizationalEntity `json:"supplier,omitempty" xml:"supplier,omitempty"`
+	Author               string                `json:"author,omitempty" xml:"author,omitempty"`
+	Publisher            string                `json:"publisher,omitempty" xml:"publisher,omitempty"`
+	Group                string                `json:"group,omitempty" xml:"group,omitempty"`
+	Name                 string                `json:"name" xml:"name"`
+	Version              string                `json:"version,omitempty" xml:"version,omitempty"`
+	Description          string                `json:"description,omitempty" xml:"description,omitempty"`
+	Scope                Scope                 `json:"scope,omitempty" xml:"scope,omitempty"`
+	Hashes               *[]Hash               `json:"hashes,omitempty" xml:"hashes>hash,omitempty"`
+	Licenses             *Licenses             `json:"licenses,omitempty" xml:"licenses,omitempty"`
+	Copyright            string                `json:"copyright,omitempty" xml:"copyright,omitempty"`
+	CPE                  string                `json:"cpe,omitempty" xml:"cpe,omitempty"`
+	PackageURL           string                `json:"purl,omitempty" xml:"purl,omitempty"`
+	SWID                 *SWID                 `json:"swid,omitempty" xml:"swid,omitempty"`
+	Modified             *bool                 `json:"modified,omitempty" xml:"modified,omitempty"`
+	Pedigree             *Pedigree             `json:"pedigree,omitempty" xml:"pedigree,omitempty"`
+	ExternalReferences   *[]ExternalReference  `json:"externalReferences,omitempty" xml:"externalReferences>reference,omitempty"`
+	Properties           *[]Property           `json:"properties,omitempty" xml:"properties>property,omitempty"`
+	Components           *[]Component          `json:"components,omitempty" xml:"components>component,omitempty"`
+	Evidence             *Evidence             `json:"evidence,omitempty" xml:"evidence,omitempty"`
+	ReleaseNotes         *ReleaseNotes         `json:"releaseNotes,omitempty" xml:"releaseNotes,omitempty"`
+	Equalable[Component] `json:"-" xml:"-"`
+}
+
+type Equalable[T any] interface {
+	IsEqual(*T) bool
+}
+
+func (c1 Component) IsEqual(c2 *Component) bool {
+	return c1.BOMRef == c2.BOMRef
 }
 
 type Composition struct {
@@ -209,8 +223,13 @@ const (
 )
 
 type Dependency struct {
-	Ref          string    `json:"ref"`
-	Dependencies *[]string `json:"dependsOn,omitempty"`
+	Ref                   string    `json:"ref"`
+	Dependencies          *[]string `json:"dependsOn,omitempty"`
+	Equalable[Dependency] `json:"-" xml:"-"`
+}
+
+func (d1 Dependency) IsEqual(d2 *Dependency) bool {
+	return d1.Ref == d2.Ref
 }
 
 type Diff struct {
@@ -224,10 +243,15 @@ type Evidence struct {
 }
 
 type ExternalReference struct {
-	URL     string                `json:"url" xml:"url"`
-	Comment string                `json:"comment,omitempty" xml:"comment,omitempty"`
-	Hashes  *[]Hash               `json:"hashes,omitempty" xml:"hashes>hash,omitempty"`
-	Type    ExternalReferenceType `json:"type" xml:"type,attr"`
+	URL                          string                `json:"url" xml:"url"`
+	Comment                      string                `json:"comment,omitempty" xml:"comment,omitempty"`
+	Hashes                       *[]Hash               `json:"hashes,omitempty" xml:"hashes>hash,omitempty"`
+	Type                         ExternalReferenceType `json:"type" xml:"type,attr"`
+	Equalable[ExternalReference] `json:"-" xml:"-"`
+}
+
+func (e1 ExternalReference) IsEqual(e2 *ExternalReference) bool {
+	return e1.URL == e2.URL && e1.Type == e2.Type
 }
 
 type ExternalReferenceType string
@@ -544,6 +568,11 @@ type Service struct {
 	Properties           *[]Property           `json:"properties,omitempty" xml:"properties>property,omitempty"`
 	Services             *[]Service            `json:"services,omitempty" xml:"services>service,omitempty"`
 	ReleaseNotes         *ReleaseNotes         `json:"releaseNotes,omitempty" xml:"releaseNotes,omitempty"`
+	Equalable[Service]   `json:"-" xml:"-"`
+}
+
+func (s1 Service) IsEqual(s2 *Service) bool {
+	return s1.BOMRef == s2.BOMRef
 }
 
 type Severity string
@@ -595,24 +624,29 @@ type Tool struct {
 }
 
 type Vulnerability struct {
-	BOMRef         string                    `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
-	ID             string                    `json:"id" xml:"id"`
-	Source         *Source                   `json:"source,omitempty" xml:"source,omitempty"`
-	References     *[]VulnerabilityReference `json:"references,omitempty" xml:"references>reference,omitempty"`
-	Ratings        *[]VulnerabilityRating    `json:"ratings,omitempty" xml:"ratings>rating,omitempty"`
-	CWEs           *[]int                    `json:"cwes,omitempty" xml:"cwes>cwe,omitempty"`
-	Description    string                    `json:"description,omitempty" xml:"description,omitempty"`
-	Detail         string                    `json:"detail,omitempty" xml:"detail,omitempty"`
-	Recommendation string                    `json:"recommendation,omitempty" xml:"recommendation,omitempty"`
-	Advisories     *[]Advisory               `json:"advisories,omitempty" xml:"advisories>advisory,omitempty"`
-	Created        string                    `json:"created,omitempty" xml:"created,omitempty"`
-	Published      string                    `json:"published,omitempty" xml:"published,omitempty"`
-	Updated        string                    `json:"updated,omitempty" xml:"updated,omitempty"`
-	Credits        *Credits                  `json:"credits,omitempty" xml:"credits,omitempty"`
-	Tools          *[]Tool                   `json:"tools,omitempty" xml:"tools>tool,omitempty"`
-	Analysis       *VulnerabilityAnalysis    `json:"analysis,omitempty" xml:"analysis,omitempty"`
-	Affects        *[]Affects                `json:"affects,omitempty" xml:"affects>target,omitempty"`
-	Properties     *[]Property               `json:"properties,omitempty" xml:"properties>property,omitempty"`
+	BOMRef                   string                    `json:"bom-ref,omitempty" xml:"bom-ref,attr,omitempty"`
+	ID                       string                    `json:"id" xml:"id"`
+	Source                   *Source                   `json:"source,omitempty" xml:"source,omitempty"`
+	References               *[]VulnerabilityReference `json:"references,omitempty" xml:"references>reference,omitempty"`
+	Ratings                  *[]VulnerabilityRating    `json:"ratings,omitempty" xml:"ratings>rating,omitempty"`
+	CWEs                     *[]int                    `json:"cwes,omitempty" xml:"cwes>cwe,omitempty"`
+	Description              string                    `json:"description,omitempty" xml:"description,omitempty"`
+	Detail                   string                    `json:"detail,omitempty" xml:"detail,omitempty"`
+	Recommendation           string                    `json:"recommendation,omitempty" xml:"recommendation,omitempty"`
+	Advisories               *[]Advisory               `json:"advisories,omitempty" xml:"advisories>advisory,omitempty"`
+	Created                  string                    `json:"created,omitempty" xml:"created,omitempty"`
+	Published                string                    `json:"published,omitempty" xml:"published,omitempty"`
+	Updated                  string                    `json:"updated,omitempty" xml:"updated,omitempty"`
+	Credits                  *Credits                  `json:"credits,omitempty" xml:"credits,omitempty"`
+	Tools                    *[]Tool                   `json:"tools,omitempty" xml:"tools>tool,omitempty"`
+	Analysis                 *VulnerabilityAnalysis    `json:"analysis,omitempty" xml:"analysis,omitempty"`
+	Affects                  *[]Affects                `json:"affects,omitempty" xml:"affects>target,omitempty"`
+	Properties               *[]Property               `json:"properties,omitempty" xml:"properties>property,omitempty"`
+	Equalable[Vulnerability] `json:"-" xml:"-"`
+}
+
+func (v1 Vulnerability) IsEqual(v2 *Vulnerability) bool {
+	return v1.ID == v2.ID
 }
 
 type VulnerabilityAnalysis struct {
